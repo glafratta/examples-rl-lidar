@@ -1,7 +1,8 @@
 import numpy as np
-import torch
 import gymnasium as gym
+from typing import Optional
 from abc import ABC, abstractmethod
+from gymnasium.envs.registration import register
 
 #making a custom env
 
@@ -25,6 +26,7 @@ class LidarReading(gym.Env): #continuous state-space
             1: np.array([0, 0.01]),   # Move up (positive y)
             2: np.array([-0.01, 0]),  # Move left (negative x)
         }
+    
 
     def _get_obs(self):
         return {"agent": self._agent_location, "target": self._target_location}
@@ -99,3 +101,25 @@ class LidarReading(gym.Env): #continuous state-space
 
         # Simple reward structure: +1 for reaching target, 0 otherwise
         reward = 1 if terminated else 0
+
+    def render(self):
+        """Render the environment for human viewing."""
+        if self.render_mode == "human":
+            # Print a simple ASCII representation
+            for y in range(self.size - 1, -1, -1):  # Top to bottom
+                row = ""
+                for x in range(self.size):
+                    if np.array_equal([x, y], self._agent_location):
+                        row += "A "  # Agent
+                    elif np.array_equal([x, y], self._target_location):
+                        row += "T "  # Target
+                    else:
+                        row += ". "  # Empty
+                print(row)
+            print()
+    
+#register custom environment
+register(
+    id="gymnasium_env/RaceTrack-c",
+    entry_point="gymnasium_env.envs:GridWorldEnv",
+)
