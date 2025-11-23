@@ -98,5 +98,4 @@ class LidarReading(gym.Env): #continuous state-space
         truncated = False
 
         # Simple reward structure: +1 for reaching target, 0 otherwise
-        # Alternative: could give small negative rewards for each step to encourage efficiency
         reward = 1 if terminated else 0
