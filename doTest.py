@@ -18,8 +18,8 @@ register(
     entry_point="environment:LidarReading",
 )
 env=gym.make("LidarReading-c")
-testing_agent=agent.Agent('qtable.npy')
+testing_agent=agent.TestAgent('qtable.npy')
 
 
-test.test(agent, env)
+test.test(testing_agent, env)
 

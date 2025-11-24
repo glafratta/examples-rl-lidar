@@ -18,6 +18,7 @@ register(
     entry_point="environment:LidarReading",
 )
 env=gym.make("LidarReading-c")
+env.reset()
 training_agent=agent.Agent(env, learning_rate, start_epsilon, epsilon_decay, final_epsilon)
 
 train.train(n_episodes, training_agent, env)

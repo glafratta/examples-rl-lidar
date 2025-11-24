@@ -1,7 +1,5 @@
 import numpy as np
 from matplotlib import pyplot as plt
-import environment
-import planningagent
 
 def get_moving_avgs(arr, window, convolution_mode):
     """Compute moving average to smooth noisy data."""

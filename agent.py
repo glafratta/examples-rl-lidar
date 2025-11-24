@@ -8,7 +8,8 @@ class Agent:
         initial_epsilon: float,
         epsilon_decay: float,
         final_epsilon: float,
-        discount_factor: float = 0.95,):
+        discount_factor: float = 0.95
+        ):
 
         """Initialize a Q-Learning agent.
 
@@ -37,9 +38,6 @@ class Agent:
         # Track learning progress
         self.training_error = []
 
-    def __init__(self, filename): #initialising just with qvalues (for testing)
-        self.q_values= np.load(filename) 
-        self.epsilon=0 #pure exploitation
 
     def get_action(self, obs: tuple[int, int, bool]) -> int:
         """Choose an action using epsilon-greedy strategy.
@@ -87,3 +85,15 @@ class Agent:
     def decay_epsilon(self):
         """Reduce exploration rate after each episode."""
         self.epsilon = max(self.final_epsilon, self.epsilon - self.epsilon_decay)
+
+class TestAgent:
+    """This agent doesn't learn, it just gets q values from somewhere else"""
+    def __init__(self, filename='', q_values=defaultdict(lambda: np.zeros(3))): #initialising just with qvalues (for testing)
+        if filename!='':
+            self.q_values= np.load(filename) 
+        else:
+            self.q_values=q_values
+
+
+    def get_action(self, obs: tuple[int, int, bool]) -> int:
+        return int(np.argmax(self.q_values[obs]))
