@@ -2,16 +2,15 @@ import numpy as np
 import gymnasium as gym
 from typing import Optional
 from abc import ABC, abstractmethod
-from gymnasium.envs.registration import register
 
 #making a custom env
 
 class LidarReading(gym.Env): #continuous state-space
-    def __init__(self, size: int=110): #110x110 grid where each square is 1cm
+    def __init__(self, size: float=1.00, _render='human'): #110x110 grid where each square is 1cm
         self.size=size
         self._agent_location = np.array([-1, -1], dtype=np.float32) #this initialises agent location and target but need to override
         self._target_location = np.array([-1, -1], dtype=np.float32) #the random initialisation in reset
-
+        self.render_mode=_render
         self.observation_space = gym.spaces.Dict(
             {
                 "agent": gym.spaces.Box(0, size - 1, shape=(2,), dtype=float),   # [x, y] coordinates
@@ -31,8 +30,6 @@ class LidarReading(gym.Env): #continuous state-space
     def _get_obs(self):
         return {"agent": self._agent_location, "target": self._target_location}
     
-    def reset(self, *, seed = None, options = None):
-        return super().reset(seed=seed, options=options)
     
     def _get_info(self):
         """Compute auxiliary information for debugging.
@@ -60,14 +57,19 @@ class LidarReading(gym.Env): #continuous state-space
         super().reset(seed=seed)
 
         # Randomly place the agent anywhere on the grid
-        self._agent_location = self.np_random.integers(0, self.size, size=2, dtype=float)
+        xy = self.np_random.integers(0, self.size, size=2, dtype=int)
+        self._agent_location[0]=float(xy[0]/100)
+        self._agent_location[1]=float(xy[1]/100)
 
         # Randomly place target, ensuring it's different from agent position
-        self._target_location = self._agent_location
-        while np.array_equal(self._target_location, self._agent_location):
-            self._target_location = self.np_random.integers(
-                0, self.size, size=2, dtype=float
+        xy_2 = self.np_random.integers(0, self.size, size=2, dtype=int)
+        while np.array_equal(xy_2, xy):
+            xy_2 = self.np_random.integers(
+                0, self.size, size=2, dtype=int
             )
+        self._target_location[0]=float(xy_2[0]/100)
+        self._target_location[1]=float(xy_2[1]/100)
+
 
         observation = self._get_obs()
         info = self._get_info()
@@ -118,8 +120,3 @@ class LidarReading(gym.Env): #continuous state-space
                 print(row)
             print()
     
-#register custom environment
-register(
-    id="gymnasium_env/RaceTrack-c",
-    entry_point="gymnasium_env.envs:GridWorldEnv",
-)

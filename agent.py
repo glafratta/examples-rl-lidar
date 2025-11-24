@@ -37,11 +37,13 @@ class Agent:
         # Track learning progress
         self.training_error = []
 
+    def __init__(self, filename): #initialising just with qvalues (for testing)
+        self.q_values= np.load(filename) 
+        self.epsilon=0 #pure exploitation
+
     def get_action(self, obs: tuple[int, int, bool]) -> int:
         """Choose an action using epsilon-greedy strategy.
-
-        Returns:
-            action: 0 (stand) or 1 (hit)
+       
         """
         # With probability epsilon: explore (random action)
         if np.random.random() < self.epsilon:
