@@ -6,24 +6,25 @@ from abc import ABC, abstractmethod
 #making a custom env
 
 class LidarReading(gym.Env): #continuous state-space
-    def __init__(self, size: float=1.00, _render='human'): #110x110 grid where each square is 1cm
+    episode=0
+    def __init__(self, size: int=5, _render='human'): #110x110 grid where each square is 1cm
         self.size=size
-        self._agent_location = np.array([-1, -1], dtype=np.float32) #this initialises agent location and target but need to override
-        self._target_location = np.array([-1, -1], dtype=np.float32) #the random initialisation in reset
+        self._agent_location = np.array([-1, -1], dtype=np.int32) #this initialises agent location and target but need to override
+        self._target_location = np.array([-1, -1], dtype=np.int32) #the random initialisation in reset
         self.render_mode=_render
         self.observation_space = gym.spaces.Dict(
             {
-                "agent": gym.spaces.Box(0, size - 1, shape=(2,), dtype=float),   # [x, y] coordinates
-                "target": gym.spaces.Box(0, size - 1, shape=(2,), dtype=float),  # [x, y] coordinates
+                "agent": gym.spaces.Box(0, size - 1, shape=(2,), dtype=int),   # [x, y] coordinates
+                "target": gym.spaces.Box(0, size - 1, shape=(2,), dtype=int),  # [x, y] coordinates
             }
         )
 
         self.action_space = gym.spaces.Discrete(3) #left, right, default
 
         self._action_to_direction = {
-            0: np.array([0.01, 0]),   # Move right (positive x)
-            1: np.array([0, 0.01]),   # Move up (positive y)
-            2: np.array([-0.01, 0]),  # Move left (negative x)
+            0: np.array([1, 0]),   # Move right (positive x)
+            1: np.array([0, 1]),   # Move up (positive y)
+            2: np.array([-1, 0]),  # Move left (negative x)
         }
     
 
@@ -57,23 +58,18 @@ class LidarReading(gym.Env): #continuous state-space
         super().reset(seed=seed)
 
         # Randomly place the agent anywhere on the grid
-        xy = self.np_random.integers(0, self.size, size=2, dtype=int)
-        self._agent_location[0]=float(xy[0]/100)
-        self._agent_location[1]=float(xy[1]/100)
+        self._agent_location = self.np_random.integers(0, self.size, size=2, dtype=int)
 
         # Randomly place target, ensuring it's different from agent position
-        xy_2 = self.np_random.integers(0, self.size, size=2, dtype=int)
-        while np.array_equal(xy_2, xy):
-            xy_2 = self.np_random.integers(
+        self._target_location = self._agent_location
+        while np.array_equal(self._target_location, self._agent_location):
+            self._target_location = self.np_random.integers(
                 0, self.size, size=2, dtype=int
             )
-        self._target_location[0]=float(xy_2[0]/100)
-        self._target_location[1]=float(xy_2[1]/100)
 
 
         observation = self._get_obs()
         info = self._get_info()
-
         return observation, info
     
     def step(self, action):
@@ -103,6 +99,11 @@ class LidarReading(gym.Env): #continuous state-space
 
         # Simple reward structure: +1 for reaching target, 0 otherwise
         reward = 1 if terminated else 0
+
+        observation = self._get_obs()
+        info = self._get_info()
+
+        return observation, reward, terminated, truncated, info
 
     def render(self):
         """Render the environment for human viewing."""

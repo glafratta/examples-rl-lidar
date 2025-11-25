@@ -25,7 +25,7 @@ class Agent:
 
         # Q-table: maps (state, action) to expected reward
         # defaultdict automatically creates entries with zeros for new states
-        self.q_values = defaultdict(lambda: np.zeros(env.action_space.n))
+        self.q_values = defaultdict(lambda: np.zeros((env.action_space.n)))
 
         self.lr = learning_rate
         self.discount_factor = discount_factor  # How much we care about future rewards
@@ -57,7 +57,7 @@ class Agent:
         action: int,
         reward: float,
         terminated: bool,
-        next_obs: tuple[int, int, bool],
+        next_obs: dict[str, tuple[int, int]],
     ):
         """Update Q-value based on experience.
 
