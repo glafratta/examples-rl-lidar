@@ -4,7 +4,7 @@ import numpy as np
 def train(n_episodes:int, agent, _env ):
       print("Training")
       for episode in range(n_episodes):
-            print("Episode ", episode)
+#            print("Episode ", episode)
       # Start a new hand
             obs, info = _env.reset()
             done = False

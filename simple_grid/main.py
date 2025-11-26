@@ -8,7 +8,7 @@ from gymnasium.envs.registration import register
 
 
 learning_rate=0.01
-n_episodes=10000
+n_episodes=100000
 start_epsilon=1.0
 final_epsilon=0.1
 epsilon_decay = start_epsilon / (n_episodes / 2) 

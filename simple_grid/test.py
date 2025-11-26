@@ -5,7 +5,7 @@ def test(agent, env, n_episodes=1000):
       total_rewards=[]
        # Temporarily disable exploration for testing
       old_epsilon = agent.epsilon
-      agent.epsilon = 0.0  # Pure exploitation
+      agent.epsilon = 0.3  # Pure exploitation
 
       for _ in range(n_episodes):
             obs, info = env.reset()
@@ -19,7 +19,6 @@ def test(agent, env, n_episodes=1000):
                  # env.render()
                   episode_reward += reward
                   done = terminated or truncated
-                  s=s+1
             #print("%i terminated =%i, truncated %i", s, terminated, truncated )
             total_rewards.append(episode_reward)
 
