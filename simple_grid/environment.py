@@ -69,10 +69,6 @@ class LidarReading(gym.Env): #continuous state-space
             self._target_location = self.np_random.integers(
                 0, self.size, size=2, dtype=int
             )
-            ct=ct+1
-            if ct>100:
-                print("Stuck!")
-                break
 
 
         observation = self._get_obs()
@@ -105,7 +101,7 @@ class LidarReading(gym.Env): #continuous state-space
         truncated = False
         
         self.nstep=self.nstep+1
-        if self.nstep>1000:
+        if self.nstep>5000:
             truncated=True
 
         # Simple reward structure: +1 for reaching target, 0 otherwise
