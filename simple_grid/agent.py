@@ -39,7 +39,7 @@ class Agent:
         self.training_error = []
 
 
-    def get_action(self, obs: tuple[int, int, bool]) -> int:
+    def get_action(self, obs: tuple[tuple[int, int], tuple[int,int]]) -> int:
         """Choose an action using epsilon-greedy strategy.
        
         """
@@ -53,11 +53,11 @@ class Agent:
         
     def update(
         self,
-        obs: tuple[int, int, bool],
+        obs: tuple[tuple[int, int], tuple[int,int]],
         action: int,
         reward: float,
         terminated: bool,
-        next_obs: dict[str, tuple[int, int]],
+        next_obs: tuple[tuple[int, int], tuple[int,int]],
     ):
         """Update Q-value based on experience.
 
@@ -95,5 +95,5 @@ class TestAgent:
             self.q_values=q_values
 
 
-    def get_action(self, obs: tuple[int, int, bool]) -> int:
+    def get_action(self, obs:  tuple[tuple[int, int], tuple[int,int]]) -> int:
         return int(np.argmax(self.q_values[obs]))

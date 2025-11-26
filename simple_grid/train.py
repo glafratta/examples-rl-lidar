@@ -16,9 +16,13 @@ def train(n_episodes:int, agent, _env ):
 
                   # Take action and observe result
                   next_obs, reward, terminated, truncated, info = _env.step(action)
+                  #_env.render()
+                  
+                  obs_tuple=((obs['agent'][0],obs['agent'][0]), (obs['target'][0], obs['target'][1]))
+                  next_obs_tuple=((next_obs['agent'][0],next_obs['agent'][0]), (next_obs['target'][0], next_obs['target'][1]))
 
                   # Learn from this experience
-                  agent.update(obs, action, reward, terminated, next_obs)
+                  agent.update(obs_tuple, action, reward, terminated, next_obs_tuple)
 
                   # Move to next state
                   done = terminated or truncated

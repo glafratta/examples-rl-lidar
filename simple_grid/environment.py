@@ -2,16 +2,18 @@ import numpy as np
 import gymnasium as gym
 from typing import Optional
 from abc import ABC, abstractmethod
-
+from collections import deque
 #making a custom env
 
 class LidarReading(gym.Env): #continuous state-space
     episode=0
+    metadata={"render_modes":["human"]}
     def __init__(self, size: int=5, _render='human'): #110x110 grid where each square is 1cm
         self.size=size
         self._agent_location = np.array([-1, -1], dtype=np.int32) #this initialises agent location and target but need to override
         self._target_location = np.array([-1, -1], dtype=np.int32) #the random initialisation in reset
         self.render_mode=_render
+        self.nstep=0
         self.observation_space = gym.spaces.Dict(
             {
                 "agent": gym.spaces.Box(0, size - 1, shape=(2,), dtype=int),   # [x, y] coordinates
@@ -56,16 +58,21 @@ class LidarReading(gym.Env): #continuous state-space
         """
         # IMPORTANT: Must call this first to seed the random number generator
         super().reset(seed=seed)
-
+        self.nstep=0
         # Randomly place the agent anywhere on the grid
         self._agent_location = self.np_random.integers(0, self.size, size=2, dtype=int)
 
         # Randomly place target, ensuring it's different from agent position
         self._target_location = self._agent_location
+        ct=0
         while np.array_equal(self._target_location, self._agent_location):
             self._target_location = self.np_random.integers(
                 0, self.size, size=2, dtype=int
             )
+            ct=ct+1
+            if ct>100:
+                print("Stuck!")
+                break
 
 
         observation = self._get_obs()
@@ -96,6 +103,10 @@ class LidarReading(gym.Env): #continuous state-space
         # We don't use truncation in this simple environment
         # (could add a step limit here if desired)
         truncated = False
+        
+        self.nstep=self.nstep+1
+        if self.nstep>1000:
+            truncated=True
 
         # Simple reward structure: +1 for reaching target, 0 otherwise
         reward = 1 if terminated else 0
