@@ -101,7 +101,7 @@ class LidarReading(gym.Env): #continuous state-space
         truncated = False
         
         self.nstep=self.nstep+1
-        if self.nstep>5000:
+        if self.nstep>90:
             truncated=True
 
         # Simple reward structure: +1 for reaching target, 0 otherwise
